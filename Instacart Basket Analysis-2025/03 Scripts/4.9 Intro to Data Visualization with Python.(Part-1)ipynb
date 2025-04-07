@@ -1,0 +1,909 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "e60bb336-534e-4425-b6ed-727a84fcd7c4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Importing Libraries\n",
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import os\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "import scipy"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "0693bbf2-aa80-4409-87f4-4cdecc45b067",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Generating a path\n",
+    "path = '/Users/samarjitgehdu/Documents/Python/Instacart Basket Analysis'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "020ba98a-48b4-443b-9880-a60c9fae95dd",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Importing the Dataframe\n",
+    "df = pd.read_csv(os.path.join(path, '02 Data', 'Original Data', 'customers.csv'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "b64ef6ef-1336-4017-a7f0-b7e077f8e845",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>user_id</th>\n",
+       "      <th>First Name</th>\n",
+       "      <th>Surnam</th>\n",
+       "      <th>Gender</th>\n",
+       "      <th>STATE</th>\n",
+       "      <th>Age</th>\n",
+       "      <th>date_joined</th>\n",
+       "      <th>n_dependants</th>\n",
+       "      <th>fam_status</th>\n",
+       "      <th>income</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>26711</td>\n",
+       "      <td>Deborah</td>\n",
+       "      <td>Esquivel</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Missouri</td>\n",
+       "      <td>48</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>165665</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>33890</td>\n",
+       "      <td>Patricia</td>\n",
+       "      <td>Hart</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>New Mexico</td>\n",
+       "      <td>36</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>0</td>\n",
+       "      <td>single</td>\n",
+       "      <td>59285</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>65803</td>\n",
+       "      <td>Kenneth</td>\n",
+       "      <td>Farley</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>Idaho</td>\n",
+       "      <td>35</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>2</td>\n",
+       "      <td>married</td>\n",
+       "      <td>99568</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>125935</td>\n",
+       "      <td>Michelle</td>\n",
+       "      <td>Hicks</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Iowa</td>\n",
+       "      <td>40</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>0</td>\n",
+       "      <td>single</td>\n",
+       "      <td>42049</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>130797</td>\n",
+       "      <td>Ann</td>\n",
+       "      <td>Gilmore</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Maryland</td>\n",
+       "      <td>26</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>1</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40374</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   user_id First Name    Surnam  Gender       STATE  Age date_joined  \\\n",
+       "0    26711    Deborah  Esquivel  Female    Missouri   48    1/1/2017   \n",
+       "1    33890   Patricia      Hart  Female  New Mexico   36    1/1/2017   \n",
+       "2    65803    Kenneth    Farley    Male       Idaho   35    1/1/2017   \n",
+       "3   125935   Michelle     Hicks  Female        Iowa   40    1/1/2017   \n",
+       "4   130797        Ann   Gilmore  Female    Maryland   26    1/1/2017   \n",
+       "\n",
+       "   n_dependants fam_status  income  \n",
+       "0             3    married  165665  \n",
+       "1             0     single   59285  \n",
+       "2             2    married   99568  \n",
+       "3             0     single   42049  \n",
+       "4             1    married   40374  "
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Data Wrangling\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "913b2348-e064-4ae9-89a6-3637a886d484",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(206209, 10)"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "46862506-a53b-46ac-8249-daa76924ca33",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Renaming Columns Names\n",
+    "df = df.rename(\n",
+    "    columns = {\n",
+    "        'Surnam' : 'Last Name',\n",
+    "        'STATE' : 'State',\n",
+    "        'date_joined' : 'Date Joined',\n",
+    "        'n_dependants' : 'Number of Dependents',\n",
+    "        'fam_status' : 'Family Status',\n",
+    "        'income' : 'Income'\n",
+    "    }\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "16a85236-d36e-447c-b111-0da05a238104",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>user_id</th>\n",
+       "      <th>First Name</th>\n",
+       "      <th>Last Name</th>\n",
+       "      <th>Gender</th>\n",
+       "      <th>State</th>\n",
+       "      <th>Age</th>\n",
+       "      <th>Date Joined</th>\n",
+       "      <th>Number of Dependents</th>\n",
+       "      <th>Family Status</th>\n",
+       "      <th>Income</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>26711</td>\n",
+       "      <td>Deborah</td>\n",
+       "      <td>Esquivel</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Missouri</td>\n",
+       "      <td>48</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>165665</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>33890</td>\n",
+       "      <td>Patricia</td>\n",
+       "      <td>Hart</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>New Mexico</td>\n",
+       "      <td>36</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>0</td>\n",
+       "      <td>single</td>\n",
+       "      <td>59285</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>65803</td>\n",
+       "      <td>Kenneth</td>\n",
+       "      <td>Farley</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>Idaho</td>\n",
+       "      <td>35</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>2</td>\n",
+       "      <td>married</td>\n",
+       "      <td>99568</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>125935</td>\n",
+       "      <td>Michelle</td>\n",
+       "      <td>Hicks</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Iowa</td>\n",
+       "      <td>40</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>0</td>\n",
+       "      <td>single</td>\n",
+       "      <td>42049</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>130797</td>\n",
+       "      <td>Ann</td>\n",
+       "      <td>Gilmore</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Maryland</td>\n",
+       "      <td>26</td>\n",
+       "      <td>1/1/2017</td>\n",
+       "      <td>1</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40374</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   user_id First Name Last Name  Gender       State  Age Date Joined  \\\n",
+       "0    26711    Deborah  Esquivel  Female    Missouri   48    1/1/2017   \n",
+       "1    33890   Patricia      Hart  Female  New Mexico   36    1/1/2017   \n",
+       "2    65803    Kenneth    Farley    Male       Idaho   35    1/1/2017   \n",
+       "3   125935   Michelle     Hicks  Female        Iowa   40    1/1/2017   \n",
+       "4   130797        Ann   Gilmore  Female    Maryland   26    1/1/2017   \n",
+       "\n",
+       "   Number of Dependents Family Status  Income  \n",
+       "0                     3       married  165665  \n",
+       "1                     0        single   59285  \n",
+       "2                     2       married   99568  \n",
+       "3                     0        single   42049  \n",
+       "4                     1       married   40374  "
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "3c59c2d4-6a35-4ba8-9518-fc89a2a6ee8e",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>user_id</th>\n",
+       "      <th>Age</th>\n",
+       "      <th>Number of Dependents</th>\n",
+       "      <th>Income</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>count</th>\n",
+       "      <td>206209.000000</td>\n",
+       "      <td>206209.000000</td>\n",
+       "      <td>206209.000000</td>\n",
+       "      <td>206209.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>mean</th>\n",
+       "      <td>103105.000000</td>\n",
+       "      <td>49.501646</td>\n",
+       "      <td>1.499823</td>\n",
+       "      <td>94632.852548</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>std</th>\n",
+       "      <td>59527.555167</td>\n",
+       "      <td>18.480962</td>\n",
+       "      <td>1.118433</td>\n",
+       "      <td>42473.786988</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>min</th>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>18.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>25903.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>25%</th>\n",
+       "      <td>51553.000000</td>\n",
+       "      <td>33.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>59874.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>50%</th>\n",
+       "      <td>103105.000000</td>\n",
+       "      <td>49.000000</td>\n",
+       "      <td>1.000000</td>\n",
+       "      <td>93547.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>75%</th>\n",
+       "      <td>154657.000000</td>\n",
+       "      <td>66.000000</td>\n",
+       "      <td>3.000000</td>\n",
+       "      <td>124244.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>max</th>\n",
+       "      <td>206209.000000</td>\n",
+       "      <td>81.000000</td>\n",
+       "      <td>3.000000</td>\n",
+       "      <td>593901.000000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "             user_id            Age  Number of Dependents         Income\n",
+       "count  206209.000000  206209.000000         206209.000000  206209.000000\n",
+       "mean   103105.000000      49.501646              1.499823   94632.852548\n",
+       "std     59527.555167      18.480962              1.118433   42473.786988\n",
+       "min         1.000000      18.000000              0.000000   25903.000000\n",
+       "25%     51553.000000      33.000000              0.000000   59874.000000\n",
+       "50%    103105.000000      49.000000              1.000000   93547.000000\n",
+       "75%    154657.000000      66.000000              3.000000  124244.000000\n",
+       "max    206209.000000      81.000000              3.000000  593901.000000"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.describe()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "4b3d3d53-a7f6-4305-811b-b7c7de5f7e64",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Finding missing values\n",
+    "Missing_Values = df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "73b73dd9-0c66-430b-8c2b-1967cae6a433",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "user_id                     0\n",
+       "First Name              11259\n",
+       "Last Name                   0\n",
+       "Gender                      0\n",
+       "State                       0\n",
+       "Age                         0\n",
+       "Date Joined                 0\n",
+       "Number of Dependents        0\n",
+       "Family Status               0\n",
+       "Income                      0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Missing_Values"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "74644f57-f86a-43a6-a28b-4177e3091ac5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Finding Duplicates Rows\n",
+    "Duplicates = df.duplicated()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "d6f43ab5-9262-4140-bf78-7ea7469121c5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Sum of the total duplicates \n",
+    "Num_of_Duplicates = Duplicates.sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "57d7d726-39d7-407e-be8c-fca84bde4df3",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0"
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Num_of_Duplicates"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "967521d0-d235-42c9-8703-262470f345e2",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "user_id                  int64\n",
+       "First Name              object\n",
+       "Last Name               object\n",
+       "Gender                  object\n",
+       "State                   object\n",
+       "Age                      int64\n",
+       "Date Joined             object\n",
+       "Number of Dependents     int64\n",
+       "Family Status           object\n",
+       "Income                   int64\n",
+       "dtype: object"
+      ]
+     },
+     "execution_count": 28,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Verifying column datatypes\n",
+    "df.dtypes"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e30dca65-4679-465d-8e92-f0a9806c6e11",
+   "metadata": {},
+   "source": [
+    "### Observation\n",
+    "Since no duplicates are found and the datatypes appear to be in their correct format. Other than the missing values of 11259 for first name which won't affect the main objective of the Analysis."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ea3d3727-47f9-457b-9ede-aeb8f84c4a6e",
+   "metadata": {},
+   "source": [
+    "### Combining Dataframe"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "a08d376e-6add-41c1-8b68-e6e9a9186924",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Importing Dataframe\n",
+    "ords_prods_merge = pd.read_pickle(os.path.join(path, '02 Data', 'Prepared Data', 'aggregated_ords_prods_merge.pkl'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "id": "557e8583-c81d-467d-9622-39b1a5380281",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Combining Dataframe customer and ords_prods_merge\n",
+    "Merged_df = pd.merge(ords_prods_merge, df, on = 'user_id', how = 'inner')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "id": "fa80fa8d-d132-4d73-85a8-2034dc51c0fd",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>order_id</th>\n",
+       "      <th>user_id</th>\n",
+       "      <th>order_number</th>\n",
+       "      <th>orders_day_of_week</th>\n",
+       "      <th>order_hour_of_day</th>\n",
+       "      <th>days_since_prior_order</th>\n",
+       "      <th>product_id</th>\n",
+       "      <th>add_to_cart_order</th>\n",
+       "      <th>reordered</th>\n",
+       "      <th>_merge</th>\n",
+       "      <th>...</th>\n",
+       "      <th>frequency_flag</th>\n",
+       "      <th>First Name</th>\n",
+       "      <th>Last Name</th>\n",
+       "      <th>Gender</th>\n",
+       "      <th>State</th>\n",
+       "      <th>Age</th>\n",
+       "      <th>Date Joined</th>\n",
+       "      <th>Number of Dependents</th>\n",
+       "      <th>Family Status</th>\n",
+       "      <th>Income</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2539329</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>both</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Non_frequent_customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2539329</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>14084</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>both</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Non_frequent_customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2539329</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>12427</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "      <td>both</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Non_frequent_customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2539329</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>26088</td>\n",
+       "      <td>4</td>\n",
+       "      <td>0</td>\n",
+       "      <td>both</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Non_frequent_customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2539329</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>26405</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>both</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Non_frequent_customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 34 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   order_id  user_id  order_number  orders_day_of_week  order_hour_of_day  \\\n",
+       "0   2539329        1             1                   2                  8   \n",
+       "1   2539329        1             1                   2                  8   \n",
+       "2   2539329        1             1                   2                  8   \n",
+       "3   2539329        1             1                   2                  8   \n",
+       "4   2539329        1             1                   2                  8   \n",
+       "\n",
+       "   days_since_prior_order  product_id  add_to_cart_order  reordered _merge  \\\n",
+       "0                     NaN         196                  1          0   both   \n",
+       "1                     NaN       14084                  2          0   both   \n",
+       "2                     NaN       12427                  3          0   both   \n",
+       "3                     NaN       26088                  4          0   both   \n",
+       "4                     NaN       26405                  5          0   both   \n",
+       "\n",
+       "   ...         frequency_flag  First Name  Last Name  Gender    State Age  \\\n",
+       "0  ...  Non_frequent_customer       Linda     Nguyen  Female  Alabama  31   \n",
+       "1  ...  Non_frequent_customer       Linda     Nguyen  Female  Alabama  31   \n",
+       "2  ...  Non_frequent_customer       Linda     Nguyen  Female  Alabama  31   \n",
+       "3  ...  Non_frequent_customer       Linda     Nguyen  Female  Alabama  31   \n",
+       "4  ...  Non_frequent_customer       Linda     Nguyen  Female  Alabama  31   \n",
+       "\n",
+       "  Date Joined Number of Dependents Family Status  Income  \n",
+       "0   2/17/2019                    3       married   40423  \n",
+       "1   2/17/2019                    3       married   40423  \n",
+       "2   2/17/2019                    3       married   40423  \n",
+       "3   2/17/2019                    3       married   40423  \n",
+       "4   2/17/2019                    3       married   40423  \n",
+       "\n",
+       "[5 rows x 34 columns]"
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Verify the merged dataframe\n",
+    "Merged_df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "id": "e24f96ee-b71b-4608-8fec-957b8e0dbf5b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(32404859, 34)"
+      ]
+     },
+     "execution_count": 40,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Merged_df.shape"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2969e24c-f5a0-4176-b58e-dd207e8d9128",
+   "metadata": {},
+   "source": [
+    "### Exporting the file in pickle format"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 43,
+   "id": "341c9cbb-3227-46ba-a683-e190f42ea0ad",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "Merged_df.to_pickle(os.path.join(path, '02 Data', 'Prepared Data', 'ords_prods_cust_merge.pkl'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bc4cd5b8-25f7-4fa0-83ec-87e454044c92",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python [conda env:base] *",
+   "language": "python",
+   "name": "conda-base-py"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
